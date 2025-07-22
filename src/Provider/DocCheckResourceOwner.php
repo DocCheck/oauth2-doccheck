@@ -12,16 +12,13 @@ use League\OAuth2\Client\Provider\ResourceOwnerInterface;
  */
 class DocCheckResourceOwner implements ResourceOwnerInterface
 {
-    protected $response = [];
-
-    public function __construct(array $response)
+    public function __construct(protected array $response)
     {
-        $this->response = $response;
     }
 
     public function getId(): ?string
     {
-        return $this->response['uniquekey'];
+        return $this->response['unique_id'] ?: null;
     }
 
     public function getEmail(): ?string

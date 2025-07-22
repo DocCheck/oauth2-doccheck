@@ -21,10 +21,10 @@ class DocCheck extends AbstractProvider
     use BearerAuthorizationTrait;
     use QueryBuilderTrait;
 
-    protected const BASE_URL = 'https://login.doccheck.com/';
-    protected $baseAuthUrl = self::BASE_URL;
-    protected $stateless = false;
-    protected $authorizationLanguage = Language::EN;
+    protected const BASE_URL = 'https://auth.doccheck.com/';
+    protected string $baseAuthUrl = self::BASE_URL;
+    protected bool $stateless = false;
+    protected Language $authorizationLanguage = Language::EN;
 
     public function __construct(array $options = [], array $collaborators = [])
     {
@@ -33,17 +33,12 @@ class DocCheck extends AbstractProvider
 
     public function getBaseAuthorizationUrl()
     {
-        $data = [
-            'dc_language' => $this->authorizationLanguage,
-            'dc_template' => 'fullscreen_dc',
-        ];
-
-        return $this->getUrl('code/?'.$this->buildQueryString($data));
+        return $this->getUrl($this->authorizationLanguage->value . '/authorize');
     }
 
     public function getBaseAccessTokenUrl(array $params)
     {
-        return $this->getUrl('service/oauth/access_token/');
+        return $this->getUrl('token');
     }
 
     protected function getAuthorizationParameters(array $options)
@@ -59,7 +54,7 @@ class DocCheck extends AbstractProvider
 
     public function getResourceOwnerDetailsUrl(AccessToken $token)
     {
-        return $this->getUrl('service/oauth/user_data/v2/');
+        return $this->getUrl('api/users/data');
     }
 
     protected function getDefaultScopes()
@@ -72,10 +67,10 @@ class DocCheck extends AbstractProvider
         if ($response->getStatusCode() >= 400) {
             $description = [];
             if (isset($data['error'])) {
-                $description[] = $data['error'].':';
+                $description[] = $data['error'] . ':';
             }
             if (isset($data['error_description'])) {
-                $description[] = $data['error_description'].':';
+                $description[] = $data['error_description'] . ':';
             }
 
             throw new IdentityProviderException(
@@ -93,6 +88,6 @@ class DocCheck extends AbstractProvider
 
     private function getUrl(string $uri): string
     {
-        return $this->baseAuthUrl.$uri;
+        return $this->baseAuthUrl . $uri;
     }
 }

@@ -14,18 +14,15 @@ use PHPUnit\Framework\TestCase;
  */
 class DocCheckTest extends TestCase
 {
-    /**
-     * @var DocCheck
-     */
-    private $provider;
+    private DocCheck $provider;
 
     protected function setUp(): void
     {
         $this->provider = new DocCheck([
             'clientId' => 'mock_client_id',
             'clientSecret' => 'mock_secret',
-            'redirectUri' => 'https://www.doccheck.com',
-            'legacy' => true
+            'redirectUri' => 'none',
+            'baseAuthUrl' => 'http://auth.doccheck.example/',
         ]);
     }
 
@@ -35,7 +32,6 @@ class DocCheckTest extends TestCase
         $uri = parse_url($url);
         parse_str($uri['query'], $query);
 
-        $this->assertStringStartsWith('https://login.doccheck.com/code/', $url);;
         $this->assertArrayHasKey('client_id', $query);
         $this->assertArrayHasKey('redirect_uri', $query);
     }
@@ -46,13 +42,13 @@ class DocCheckTest extends TestCase
             'clientId' => 'mock_client_id',
             'clientSecret' => 'mock_secret',
             'redirectUri' => 'none',
-            'authorizationLanguage' => Language::ES,
-            'legacy' => true
+            'baseAuthUrl' => 'http://auth.doccheck.example/',
+            'authorizationLanguage' => Language::ES
         ]);
 
         $url = $provider->getAuthorizationUrl();
 
-        $this->assertStringStartsWith('https://login.doccheck.com/code/?dc_language=es', $url);
+        $this->assertStringStartsWith('http://auth.doccheck.example/es/authorize', $url);
     }
 
     public function testStatelessAuthorizationUrl(): void
@@ -62,8 +58,7 @@ class DocCheckTest extends TestCase
             'clientSecret' => 'mock_secret',
             'redirectUri' => 'none',
             'authorizationLanguage' => Language::EN,
-            'stateless' => true,
-            'legacy' => true
+            'stateless' => true
         ]);
 
         $url = $provider->getAuthorizationUrl();
