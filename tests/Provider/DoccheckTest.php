@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Doccheck\OAuth2\Client\Test\Provider;
 
-use DocCheck\OAuth2\Client\Provider\Doccheck;
-use DocCheck\OAuth2\Client\Utils\Language;
+use Doccheck\OAuth2\Client\Provider\Doccheck;
+use Doccheck\OAuth2\Client\Utils\Language;
 use PHPUnit\Framework\TestCase;
 
 /**
