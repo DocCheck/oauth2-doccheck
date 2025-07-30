@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Doccheck\OAuth2\Client\Provider;
 
-use DocCheck\OAuth2\Client\Utils\Language;
+use Doccheck\OAuth2\Client\Utils\Language;
 use League\OAuth2\Client\Provider\AbstractProvider;
 use League\OAuth2\Client\Provider\Exception\IdentityProviderException;
 use League\OAuth2\Client\Token\AccessToken;
