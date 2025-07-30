@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace DocCheck\OAuth2\Client\Provider;
+namespace Doccheck\OAuth2\Client\Provider;
 
 use League\OAuth2\Client\Provider\ResourceOwnerInterface;
 
@@ -10,7 +10,7 @@ use League\OAuth2\Client\Provider\ResourceOwnerInterface;
  * @author  Magnus Reiß <magnus.reiss@doccheck.com>
  * @license 2025 DocCheck Community GmbH
  */
-class DocCheckResourceOwner implements ResourceOwnerInterface
+class DoccheckResourceOwner implements ResourceOwnerInterface
 {
     protected $response = [];
 

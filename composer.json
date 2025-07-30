@@ -27,12 +27,12 @@
   },
   "autoload": {
     "psr-4": {
-      "DocCheck\\OAuth2\\Client\\": "src/"
+      "Doccheck\\OAuth2\\Client\\": "src/"
     }
   },
   "autoload-dev": {
     "psr-4": {
-      "DocCheck\\OAuth2\\Client\\Test\\": "tests/"
+      "Doccheck\\OAuth2\\Client\\Test\\": "tests/"
     }
   }
 }

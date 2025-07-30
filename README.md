@@ -3,7 +3,7 @@ This package provides DocCheck OAuth 2.0 support for the PHP League's [OAuth 2.0
 
 ## Usage
 
-Usage is the same as The League's OAuth client, using `\DocCheck\OAuth2\Client\Provider\DocCheck` as the provider.
+Usage is the same as The League's OAuth client, using `\Doccheck\OAuth2\Client\Provider\Doccheck` as the provider.
 
 ### Authorization Code Flow
 
@@ -12,7 +12,7 @@ require_once('./vendor/autoload.php');
 
 session_start();
 
-$provider = new \DocCheck\OAuth2\Client\Provider\DocCheck([
+$provider = new \Doccheck\OAuth2\Client\Provider\Doccheck([
     'clientId'          => '{doccheck-client-id}',
     'clientSecret'      => '{doccheck-client-secret}',
     'redirectUri'       => 'https://example.com/callback-url',
