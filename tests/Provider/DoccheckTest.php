@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace DocCheck\OAuth2\Client\Test\Provider;
+namespace Doccheck\OAuth2\Client\Test\Provider;
 
-use DocCheck\OAuth2\Client\Provider\DocCheck;
+use DocCheck\OAuth2\Client\Provider\Doccheck;
 use DocCheck\OAuth2\Client\Utils\Language;
 use PHPUnit\Framework\TestCase;
 
@@ -12,13 +12,13 @@ use PHPUnit\Framework\TestCase;
  * @author  Magnus Reiß <magnus.reiss@doccheck.com>
  * @license 2025 DocCheck Community GmbH
  */
-class DocCheckTest extends TestCase
+class DoccheckTest extends TestCase
 {
-    private DocCheck $provider;
+    private Doccheck $provider;
 
     protected function setUp(): void
     {
-        $this->provider = new DocCheck([
+        $this->provider = new Doccheck([
             'clientId' => 'mock_client_id',
             'clientSecret' => 'mock_secret',
             'redirectUri' => 'none',
@@ -38,7 +38,7 @@ class DocCheckTest extends TestCase
 
     public function testAuthorizationUrlWithForeignLanguage(): void
     {
-        $provider = new DocCheck([
+        $provider = new Doccheck([
             'clientId' => 'mock_client_id',
             'clientSecret' => 'mock_secret',
             'redirectUri' => 'none',
@@ -53,7 +53,7 @@ class DocCheckTest extends TestCase
 
     public function testStatelessAuthorizationUrl(): void
     {
-        $provider = new DocCheck([
+        $provider = new Doccheck([
             'clientId' => 'mock_client_id',
             'clientSecret' => 'mock_secret',
             'redirectUri' => 'none',
