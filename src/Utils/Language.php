@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace DocCheck\OAuth2\Client\Utils;
+namespace Doccheck\OAuth2\Client\Utils;
 
 /**
  * @author  Magnus Reiß <magnus.reiss@doccheck.com>

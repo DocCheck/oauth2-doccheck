@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace DocCheck\OAuth2\Client\Provider;
+namespace Doccheck\OAuth2\Client\Provider;
 
 use DocCheck\OAuth2\Client\Utils\Language;
 use League\OAuth2\Client\Provider\AbstractProvider;
@@ -16,7 +16,7 @@ use Psr\Http\Message\ResponseInterface;
  * @author  Magnus Reiß <magnus.reiss@doccheck.com>
  * @license 2025 DocCheck Community GmbH
  */
-class DocCheck extends AbstractProvider
+class Doccheck extends AbstractProvider
 {
     use BearerAuthorizationTrait;
     use QueryBuilderTrait;
@@ -88,7 +88,7 @@ class DocCheck extends AbstractProvider
 
     protected function createResourceOwner(array $response, AccessToken $token)
     {
-        return new DocCheckResourceOwner($response);
+        return new DoccheckResourceOwner($response);
     }
 
     private function getUrl(string $uri): string
