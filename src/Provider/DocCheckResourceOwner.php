@@ -18,12 +18,12 @@ class DocCheckResourceOwner implements ResourceOwnerInterface
 
     public function getId(): ?string
     {
-        return $this->response['unique_id'] ?: null;
+        return $this->response['unique_id'] ?? null;
     }
 
     public function getEmail(): ?string
     {
-        return $this->response['email'] ?: null;
+        return $this->response['email'] ? strtolower($this->response['email']) : null;
     }
 
     public function toArray(): array

@@ -86,7 +86,7 @@ class DocCheck extends AbstractProvider
         return new DocCheckResourceOwner($response);
     }
 
-    private function getUrl(string $uri): string
+    protected function getUrl(string $uri): string
     {
         return $this->baseAuthUrl . $uri;
     }
