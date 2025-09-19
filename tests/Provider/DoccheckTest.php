@@ -4,8 +4,9 @@ declare(strict_types=1);
 
 namespace Doccheck\OAuth2\Client\Test\Provider;
 
-use DocCheck\OAuth2\Client\Provider\Doccheck;
-use DocCheck\OAuth2\Client\Utils\Language;
+use Composer\InstalledVersions;
+use Doccheck\OAuth2\Client\Provider\Doccheck;
+use Doccheck\OAuth2\Client\Utils\Language;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -73,5 +74,31 @@ class DoccheckTest extends TestCase
         $this->assertArrayHasKey('client_id', $query);
         $this->assertArrayHasKey('redirect_uri', $query);
         $this->assertArrayNotHasKey('state', $query);
+    }
+
+    public function testDefaultHeaders(): void
+    {
+        $provider = new Doccheck([
+            'clientId' => 'mock_client_id',
+            'clientSecret' => 'mock_secret',
+            'redirectUri' => 'none',
+            'authorizationLanguage' => Language::EN,
+            'stateless' => true,
+            'legacy' => true
+        ]);
+
+        $headers = $provider->getHeaders();
+
+        $this->assertArrayHasKey('User-Agent', $headers);
+
+        $expectedUserAgent = sprintf(
+            '%s/%s (%s) PHP/%s',
+            'OAuth2DocCheck',
+            InstalledVersions::getPrettyVersion('doccheck/oauth2-doccheck'),
+            php_uname('s'), // operating system
+            phpversion()
+        );
+
+        $this->assertEquals($expectedUserAgent, $headers['User-Agent']);
     }
 }
