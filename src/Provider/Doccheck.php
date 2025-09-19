@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doccheck\OAuth2\Client\Provider;
 
+use Composer\InstalledVersions;
 use Doccheck\OAuth2\Client\Utils\Language;
 use League\OAuth2\Client\Provider\AbstractProvider;
 use League\OAuth2\Client\Provider\Exception\IdentityProviderException;
@@ -89,5 +90,26 @@ class Doccheck extends AbstractProvider
     protected function getUrl(string $uri): string
     {
         return $this->baseAuthUrl . $uri;
+    }
+
+    /**
+     * @return array<string, string>
+     */
+    protected function getDefaultHeaders(): array
+    {
+        $userAgent = sprintf(
+            '%s/%s (%s) PHP/%s',
+            'OAuth2DocCheck',
+            InstalledVersions::getPrettyVersion('doccheck/oauth2-doccheck'),
+            php_uname('s'), // operating system
+            phpversion()
+        );
+
+        return array_merge(
+            parent::getDefaultHeaders(),
+            [
+                'User-Agent' => $userAgent
+            ]
+        );
     }
 }
