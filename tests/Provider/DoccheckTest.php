@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Doccheck\OAuth2\Client\Test\Provider;
 
-use Composer\InstalledVersions;
 use Doccheck\OAuth2\Client\Provider\Doccheck;
 use Doccheck\OAuth2\Client\Utils\Language;
+use Doccheck\OAuth2\Client\Utils\Version;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -89,7 +89,7 @@ class DoccheckTest extends TestCase
         $expectedUserAgent = sprintf(
             '%s/%s (%s) PHP/%s',
             'OAuth2DocCheck',
-            InstalledVersions::getPrettyVersion('doccheck/oauth2-doccheck'),
+            Version::getVersion(),
             php_uname('s'), // operating system
             phpversion()
         );
