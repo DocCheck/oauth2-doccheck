@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Doccheck\OAuth2\Client\Provider;
 
-use Composer\InstalledVersions;
 use Doccheck\OAuth2\Client\Utils\Language;
+use Doccheck\OAuth2\Client\Utils\Version;
 use League\OAuth2\Client\Provider\AbstractProvider;
 use League\OAuth2\Client\Provider\Exception\IdentityProviderException;
 use League\OAuth2\Client\Token\AccessToken;
@@ -67,11 +67,14 @@ class Doccheck extends AbstractProvider
     {
         if ($response->getStatusCode() >= 400) {
             $description = [];
-            if (isset($data['error'])) {
-                $description[] = $data['error'] . ':';
-            }
-            if (isset($data['error_description'])) {
-                $description[] = $data['error_description'] . ':';
+
+            if (is_array($data)) {
+                if (isset($data['error'])) {
+                    $description[] = $data['error'] . ':';
+                }
+                if (isset($data['error_description'])) {
+                    $description[] = $data['error_description'] . ':';
+                }
             }
 
             throw new IdentityProviderException(
@@ -100,7 +103,7 @@ class Doccheck extends AbstractProvider
         $userAgent = sprintf(
             '%s/%s (%s) PHP/%s',
             'OAuth2DocCheck',
-            InstalledVersions::getPrettyVersion('doccheck/oauth2-doccheck'),
+            Version::getVersion(),
             php_uname('s'), // operating system
             phpversion()
         );
