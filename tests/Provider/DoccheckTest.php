@@ -7,7 +7,10 @@ namespace Doccheck\OAuth2\Client\Test\Provider;
 use Doccheck\OAuth2\Client\Provider\Doccheck;
 use Doccheck\OAuth2\Client\Utils\Language;
 use Doccheck\OAuth2\Client\Utils\Version;
+use League\OAuth2\Client\Provider\Exception\IdentityProviderException;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
+use Psr\Http\Message\ResponseInterface;
 
 /**
  * @author  Magnus Reiß <magnus.reiss@doccheck.com>
@@ -95,5 +98,61 @@ class DoccheckTest extends TestCase
         );
 
         $this->assertEquals($expectedUserAgent, $headers['User-Agent']);
+    }
+
+    #[DataProvider('errorResponseProvider')]
+    public function testCheckResponseThrowsExceptionOnErrors(int $status, array $data, string $expectedMessage): void
+    {
+        $response = $this->createMock(ResponseInterface::class);
+        $response->method('getStatusCode')->willReturn($status);
+        $response->method('getReasonPhrase')->willReturn('Internal Server Error');
+
+        $provider = new class([
+            'clientId' => 'mock_client_id',
+            'clientSecret' => 'mock_secret',
+            'redirectUri' => 'none',
+        ]) extends Doccheck {
+            public function checkResponse(ResponseInterface $response, $data)
+            {
+                parent::checkResponse($response, $data);
+            }
+        };
+
+        $this->expectException(IdentityProviderException::class);
+        $this->expectExceptionMessage($expectedMessage);
+        $this->expectExceptionCode($status);
+
+        $provider->checkResponse($response, $data);
+    }
+
+    public static function errorResponseProvider(): array
+    {
+        return [
+            'error and description' => [
+                400,
+                ['error' => 'foo', 'error_description' => 'bar'],
+                'foo: bar'
+            ],
+            'error, description and hint' => [
+                401,
+                ['error' => 'foo', 'error_description' => 'bar', 'hint' => 'baz'],
+                'foo: bar Hint: "baz".'
+            ],
+            'only hint' => [
+                403,
+                ['hint' => 'some hint'],
+                'Hint: "some hint".'
+            ],
+            'only error' => [
+                400,
+                ['error' => 'error_code'],
+                'error_code:'
+            ],
+            'no data' => [
+                500,
+                [],
+                'Internal Server Error'
+            ]
+        ];
     }
 }
