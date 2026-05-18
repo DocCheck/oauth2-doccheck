@@ -67,14 +67,17 @@ class Doccheck extends AbstractProvider
     {
         if ($response->getStatusCode() >= 400) {
             $description = [];
-            if (isset($data['error'])) {
-                $description[] = $data['error'] . ':';
-            }
-            if (isset($data['error_description'])) {
-                $description[] = $data['error_description'];
-            }
-            if (isset($data['hint'])) {
-                $description[] = sprintf('Hint: "%s".', $data['hint']);
+
+            if (is_array($data)) {
+                if (isset($data['error'])) {
+                    $description[] = $data['error'] . ':';
+                }
+                if (isset($data['error_description'])) {
+                    $description[] = $data['error_description'];
+                }
+                if (isset($data['hint'])) {
+                    $description[] = sprintf('Hint: "%s".', $data['hint']);
+                }
             }
 
             throw new IdentityProviderException(
