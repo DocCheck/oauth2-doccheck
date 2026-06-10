@@ -35,5 +35,13 @@
         "psr-4": {
             "Doccheck\\OAuth2\\Client\\Test\\": "tests/"
         }
+    },
+    "scripts": {
+        "post-install-cmd": [
+            "echo 'WARNING: Version 1 of doccheck/oauth2-doccheck is deprecated. Please upgrade to version 2: composer require doccheck/oauth2-doccheck:^2.0'"
+        ],
+        "post-update-cmd": [
+            "echo 'WARNING: Version 1 of doccheck/oauth2-doccheck is deprecated. Please upgrade to version 2: composer require doccheck/oauth2-doccheck:^2.0'"
+        ]
     }
 }
