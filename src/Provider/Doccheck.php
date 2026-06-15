@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Doccheck\OAuth2\Client\Provider;
 
-use Composer\InstalledVersions;
 use Doccheck\OAuth2\Client\Utils\Language;
+use Doccheck\OAuth2\Client\Utils\Version;
 use League\OAuth2\Client\Provider\AbstractProvider;
 use League\OAuth2\Client\Provider\Exception\IdentityProviderException;
 use League\OAuth2\Client\Token\AccessToken;
@@ -22,34 +22,24 @@ class Doccheck extends AbstractProvider
     use BearerAuthorizationTrait;
     use QueryBuilderTrait;
 
-    protected const BASE_URL = 'https://login.doccheck.com/';
-    protected $baseAuthUrl = self::BASE_URL;
-    protected $stateless = false;
-    protected $authorizationLanguage = Language::EN;
+    protected const BASE_URL = 'https://auth.doccheck.com/';
+    protected string $baseAuthUrl = self::BASE_URL;
+    protected bool $stateless = false;
+    protected Language $authorizationLanguage = Language::EN;
 
     public function __construct(array $options = [], array $collaborators = [])
     {
-        @trigger_error(
-            'Version 1 of doccheck/oauth2-doccheck is deprecated and will no longer be maintained. ' .
-            'Please upgrade to version 2: composer require doccheck/oauth2-doccheck:^2.0',
-            E_USER_DEPRECATED
-        );
         parent::__construct($options, $collaborators);
     }
 
     public function getBaseAuthorizationUrl()
     {
-        $data = [
-            'dc_language' => $this->authorizationLanguage,
-            'dc_template' => 'fullscreen_dc',
-        ];
-
-        return $this->getUrl('code/?'.$this->buildQueryString($data));
+        return $this->getUrl($this->authorizationLanguage->value . '/authorize');
     }
 
     public function getBaseAccessTokenUrl(array $params)
     {
-        return $this->getUrl('service/oauth/access_token/');
+        return $this->getUrl('token');
     }
 
     protected function getAuthorizationParameters(array $options)
@@ -65,7 +55,7 @@ class Doccheck extends AbstractProvider
 
     public function getResourceOwnerDetailsUrl(AccessToken $token)
     {
-        return $this->getUrl('service/oauth/user_data/v2/');
+        return $this->getUrl('api/users/data');
     }
 
     protected function getDefaultScopes()
@@ -77,11 +67,17 @@ class Doccheck extends AbstractProvider
     {
         if ($response->getStatusCode() >= 400) {
             $description = [];
-            if (isset($data['error'])) {
-                $description[] = $data['error'].':';
-            }
-            if (isset($data['error_description'])) {
-                $description[] = $data['error_description'].':';
+
+            if (is_array($data)) {
+                if (isset($data['error'])) {
+                    $description[] = $data['error'] . ':';
+                }
+                if (isset($data['error_description'])) {
+                    $description[] = $data['error_description'];
+                }
+                if (isset($data['hint'])) {
+                    $description[] = sprintf('Hint: "%s".', $data['hint']);
+                }
             }
 
             throw new IdentityProviderException(
@@ -97,9 +93,9 @@ class Doccheck extends AbstractProvider
         return new DoccheckResourceOwner($response);
     }
 
-    private function getUrl(string $uri): string
+    protected function getUrl(string $uri): string
     {
-        return $this->baseAuthUrl.$uri;
+        return $this->baseAuthUrl . $uri;
     }
 
     /**
@@ -110,7 +106,7 @@ class Doccheck extends AbstractProvider
         $userAgent = sprintf(
             '%s/%s (%s) PHP/%s',
             'OAuth2DocCheck',
-            InstalledVersions::getPrettyVersion('doccheck/oauth2-doccheck'),
+            Version::getVersion(),
             php_uname('s'), // operating system
             phpversion()
         );

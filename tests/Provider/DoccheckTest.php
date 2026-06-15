@@ -4,10 +4,13 @@ declare(strict_types=1);
 
 namespace Doccheck\OAuth2\Client\Test\Provider;
 
-use Composer\InstalledVersions;
 use Doccheck\OAuth2\Client\Provider\Doccheck;
 use Doccheck\OAuth2\Client\Utils\Language;
+use Doccheck\OAuth2\Client\Utils\Version;
+use League\OAuth2\Client\Provider\Exception\IdentityProviderException;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
+use Psr\Http\Message\ResponseInterface;
 
 /**
  * @author  Magnus Reiß <magnus.reiss@doccheck.com>
@@ -15,18 +18,15 @@ use PHPUnit\Framework\TestCase;
  */
 class DoccheckTest extends TestCase
 {
-    /**
-     * @var Doccheck
-     */
-    private $provider;
+    private Doccheck $provider;
 
     protected function setUp(): void
     {
         $this->provider = new Doccheck([
             'clientId' => 'mock_client_id',
             'clientSecret' => 'mock_secret',
-            'redirectUri' => 'https://www.doccheck.com',
-            'legacy' => true
+            'redirectUri' => 'none',
+            'baseAuthUrl' => 'http://auth.doccheck.example/',
         ]);
     }
 
@@ -36,7 +36,6 @@ class DoccheckTest extends TestCase
         $uri = parse_url($url);
         parse_str($uri['query'], $query);
 
-        $this->assertStringStartsWith('https://login.doccheck.com/code/', $url);;
         $this->assertArrayHasKey('client_id', $query);
         $this->assertArrayHasKey('redirect_uri', $query);
     }
@@ -47,13 +46,13 @@ class DoccheckTest extends TestCase
             'clientId' => 'mock_client_id',
             'clientSecret' => 'mock_secret',
             'redirectUri' => 'none',
-            'authorizationLanguage' => Language::ES,
-            'legacy' => true
+            'baseAuthUrl' => 'http://auth.doccheck.example/',
+            'authorizationLanguage' => Language::ES
         ]);
 
         $url = $provider->getAuthorizationUrl();
 
-        $this->assertStringStartsWith('https://login.doccheck.com/code/?dc_language=es', $url);
+        $this->assertStringStartsWith('http://auth.doccheck.example/es/authorize', $url);
     }
 
     public function testStatelessAuthorizationUrl(): void
@@ -63,8 +62,7 @@ class DoccheckTest extends TestCase
             'clientSecret' => 'mock_secret',
             'redirectUri' => 'none',
             'authorizationLanguage' => Language::EN,
-            'stateless' => true,
-            'legacy' => true
+            'stateless' => true
         ]);
 
         $url = $provider->getAuthorizationUrl();
@@ -94,11 +92,67 @@ class DoccheckTest extends TestCase
         $expectedUserAgent = sprintf(
             '%s/%s (%s) PHP/%s',
             'OAuth2DocCheck',
-            InstalledVersions::getPrettyVersion('doccheck/oauth2-doccheck'),
+            Version::getVersion(),
             php_uname('s'), // operating system
             phpversion()
         );
 
         $this->assertEquals($expectedUserAgent, $headers['User-Agent']);
+    }
+
+    #[DataProvider('errorResponseProvider')]
+    public function testCheckResponseThrowsExceptionOnErrors(int $status, array $data, string $expectedMessage): void
+    {
+        $response = $this->createMock(ResponseInterface::class);
+        $response->method('getStatusCode')->willReturn($status);
+        $response->method('getReasonPhrase')->willReturn('Internal Server Error');
+
+        $provider = new class([
+            'clientId' => 'mock_client_id',
+            'clientSecret' => 'mock_secret',
+            'redirectUri' => 'none',
+        ]) extends Doccheck {
+            public function checkResponse(ResponseInterface $response, $data)
+            {
+                parent::checkResponse($response, $data);
+            }
+        };
+
+        $this->expectException(IdentityProviderException::class);
+        $this->expectExceptionMessage($expectedMessage);
+        $this->expectExceptionCode($status);
+
+        $provider->checkResponse($response, $data);
+    }
+
+    public static function errorResponseProvider(): array
+    {
+        return [
+            'error and description' => [
+                400,
+                ['error' => 'foo', 'error_description' => 'bar'],
+                'foo: bar'
+            ],
+            'error, description and hint' => [
+                401,
+                ['error' => 'foo', 'error_description' => 'bar', 'hint' => 'baz'],
+                'foo: bar Hint: "baz".'
+            ],
+            'only hint' => [
+                403,
+                ['hint' => 'some hint'],
+                'Hint: "some hint".'
+            ],
+            'only error' => [
+                400,
+                ['error' => 'error_code'],
+                'error_code:'
+            ],
+            'no data' => [
+                500,
+                [],
+                'Internal Server Error'
+            ]
+        ];
     }
 }

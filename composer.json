@@ -18,13 +18,13 @@
         "doccheck"
     ],
     "require": {
-        "php": ">=7.2",
+        "php": ">=8.2",
         "composer-runtime-api": "^2.0",
         "league/oauth2-client": "^2.0"
     },
     "require-dev": {
-        "phpunit/phpunit": "^7",
-        "symfony/var-dumper": "^5.4"
+        "phpunit/phpunit": "^11.0",
+        "symfony/var-dumper": "^7.2"
     },
     "autoload": {
         "psr-4": {
@@ -35,13 +35,5 @@
         "psr-4": {
             "Doccheck\\OAuth2\\Client\\Test\\": "tests/"
         }
-    },
-    "scripts": {
-        "post-install-cmd": [
-            "echo 'WARNING: Version 1 of doccheck/oauth2-doccheck is deprecated. Please upgrade to version 2: composer require doccheck/oauth2-doccheck:^2.0'"
-        ],
-        "post-update-cmd": [
-            "echo 'WARNING: Version 1 of doccheck/oauth2-doccheck is deprecated. Please upgrade to version 2: composer require doccheck/oauth2-doccheck:^2.0'"
-        ]
     }
 }
