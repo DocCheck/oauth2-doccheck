@@ -1,4 +1,12 @@
 # DocCheck Provider for OAuth 2.0 Client
+
+> [!WARNING]
+> **VERSION 1 OF THIS PACKAGE IS NO LONGER ACTIVELY MAINTAINED.**
+> Please use version 2 for new installations and upgrades:
+> ```bash
+> composer require doccheck/oauth2-doccheck:^2.0
+> ```
+
 This package provides DocCheck OAuth 2.0 support for the PHP League's [OAuth 2.0 Client](https://github.com/thephpleague/oauth2-client).
 
 ## Installation
