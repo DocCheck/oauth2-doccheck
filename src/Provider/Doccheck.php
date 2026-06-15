@@ -29,6 +29,11 @@ class Doccheck extends AbstractProvider
 
     public function __construct(array $options = [], array $collaborators = [])
     {
+        @trigger_error(
+            'Version 1 of doccheck/oauth2-doccheck is deprecated and will no longer be maintained. ' .
+            'Please upgrade to version 2: composer require doccheck/oauth2-doccheck:^2.0',
+            E_USER_DEPRECATED
+        );
         parent::__construct($options, $collaborators);
     }
 
